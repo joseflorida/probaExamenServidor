@@ -1,0 +1,28 @@
+{% extends('base.html.twig') %}
+
+{% block stylesheet %}
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+{% endblock %}
+
+{% block body %}
+<ul id="villano">
+<h1>Lista de usuarios</h1>
+    {% for villano in villano %}
+        <li><b>Id:</b>{{ villano.id }}</li>
+        <br>
+        <li><b>Usuario:</b>{{ villano.villano }}</li>
+        <br>
+        <li><b>Nombre:</b>{{ villano.superpoder }}</li>
+        <br>
+        <li><b>Apellidos:</b>{{ villano.escondite }}</li>
+        <br>
+
+
+    {% endfor %}
+
+</ul>
+
+
+{% endblock %}
