@@ -61,4 +61,15 @@ class DefaultController extends Controller
             'error'         => $error,
         ));
     }
+         /**
+      * @Route("/admin/usuarios/", name="usuarios")
+      */
+
+    public function usuariosAction(Request $request)
+    {
+      $repository = $this->getDoctrine()->getRepository(Usuarios::class);
+      $usuarios = $repository->findAll();
+      return $this->render('listar_usuarios.html.twig', array('usuarios' => $usuarios ));
+
+}
 }

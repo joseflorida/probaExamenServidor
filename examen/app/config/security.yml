@@ -21,7 +21,9 @@ security:
 
         admin:
             pattern: ^/admin
+            provider: our_db_provider
             http_basic: ~
+
 
         main:
             anonymous: ~
