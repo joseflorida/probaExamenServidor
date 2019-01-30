@@ -2,66 +2,63 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Usuarios;
+use AppBundle\Form\UsuariosType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
-use AppBundle\Form\UsuariosType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use AppBundle\Entity\Usuarios;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class DefaultController extends Controller
 {
     /**
-     * @Route("/", name="homepage")
+     * @Route("/registrarse", name="registrarse")
      */
-    public function indexAction(Request $request)
+    public function registrarseJusticiaAction(Request $request, UserPasswordEncoderInterface $passwordEncoder)
     {
-        // replace this example code with whatever you need
-        return $this->render('default/index.html.twig', [
-            'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
-        ]);
+
+        $usuario = new Usuarios();
+        //Construyendo el form.
+        $form = $this->createForm(UsuariosType::class,$usuario);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            // Encriptamos la constraseña
+            $password = $passwordEncoder->encodePassword($usuario, $usuario->getPlainPassword());
+            $usuario->setPassword($password);
+
+            //Recogemos la info del Usuarios
+            $usuario = $form->getData();
+
+            // Roles
+            $usuario->setRoles(array('ROLE_USER'));
+
+            //Insertamos el form en la BDD.
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($usuario);
+            $entityManager->flush();
+        }
+        //Cargamos esta pagina antes de hacer el sumbit
+        return $this->render('registro.html.twig',array('form'=>$form->createView()));
+
     }
+
     /**
-     * @Route("/registro/", name="registro")
+     * @Route("/", name="login")
      */
-    public function registroAction(Request $request, UserPasswordEncoderInterface $passwordEncoder)
-    {
-      // 1) build the form
-      $user = new Usuarios();
-      $form = $this->createForm(UsuariosType::class, $user);
-      // 2) handle the submit (will only happen on POST)
-      $form->handleRequest($request);
-      if ($form->isSubmitted() && $form->isValid()) {
-          // 3) Encode the password (you could also do this via Doctrine listener)
-          $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
-          $user->setPassword($password);
-          // 4) save the User!
-          $entityManager = $this->getDoctrine()->getManager();
-          $entityManager->persist($user);
-          $entityManager->flush();
-          // ... do any other work - like sending them an email, etc
-          // maybe set a "flash" success message for the user
-          return $this->redirectToRoute('registro');
-      }
-      return $this->render(
-          'registro.html.twig',
-          array('form' => $form->createView())
-      );
-    }
-    /**
-     * @Route("/login", name="login")
-     */
-    public function loginAction(AuthenticationUtils $authenticationUtils)
+    public function entrarAction(AuthenticationUtils $authenticationUtils)
     {
         // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
+
         // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
-        return $this->render('login.html.twig', [
+
+        return $this->render('login.html.twig', array(
             'last_username' => $lastUsername,
             'error'         => $error,
-        ]);
+        ));
     }
 }

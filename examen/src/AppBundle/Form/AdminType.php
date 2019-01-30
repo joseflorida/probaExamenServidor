@@ -20,10 +20,7 @@ class AdminType extends AbstractType
                 'type' => PasswordType::class,
                 'first_options'  => ['label' => 'Contraseña'],
                 'second_options' => ['label' => 'Repetir contraseña'],
-            ])
-            ->add('superpoder', TextType::class, array(
-                'label' => 'Superpoder',
-                'required' => true));
+            ]);
     }/**
      * {@inheritdoc}
      */
