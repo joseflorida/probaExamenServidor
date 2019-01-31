@@ -4,6 +4,8 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Usuarios;
 use AppBundle\Form\UsuariosType;
+use AppBundle\Entity\Evento;
+use AppBundle\Form\EventoType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -72,4 +74,32 @@ class DefaultController extends Controller
       return $this->render('listar_usuarios.html.twig', array('usuarios' => $usuarios ));
 
 }
+/**
+ * @Route("/admin/evento/insertar_eventos/", name="insertar_eventos")
+ */
+ public function InsertarAction(Request $request)
+{
+  $usuario=new Evento();
+  $form = $this->createForm(EventoType::class, $usuario);
+  $form->handleRequest($request);
+  if ($form->isSubmitted() && $form->isValid()) {
+    $usuario = $form->getData();
+    $entityManager = $this->getDoctrine()->getManager();
+    $entityManager->persist($usuario);
+    $entityManager->flush();
+
+  }
+  return $this->render('insertar.html.twig', array('form' => $form->createView()));
+}
+/**
+ * @Route("/evento/listar_eventos/", name="listar_eventos")
+ */
+public function evento_listaAction(Request $request)
+{
+  $repository = $this->getDoctrine()->getRepository(Evento::class);
+  $usuarios = $repository->findAll();
+  return $this->render('listar_eventos.html.twig', array('usuarios' => $usuarios ));
+
+}
+
 }
